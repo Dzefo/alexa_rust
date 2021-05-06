@@ -102,7 +102,7 @@ impl Intent {
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Slot {
     pub name: String,
-    pub value: String,
+    pub value: Option<String>,
     #[serde(rename = "confirmationStatus")]
     pub confirmation_status: Option<String>,
     pub resolutions: Option<Resolution>,
@@ -118,7 +118,7 @@ pub struct Resolution {
 pub struct ResolutionsPerAuthority {
     pub authority: String,
     pub status: Status,
-    pub values: Vec<ValueWrapper>,
+    pub values: Option<Vec<ValueWrapper>>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -320,6 +320,7 @@ impl Request {
                 .get_slot(slot)
                 .as_ref()?
                 .value
+                .as_ref()?
                 .clone(),
         )
     }
@@ -347,7 +348,7 @@ mod tests {
         let p: Result<Request, serde_json::Error> = self::serde_json::from_str(default_req());
         match p {
             Ok(req) => assert_eq!(req.version, "1.0"),
-            Err(e) => panic!(e.to_string()),
+            Err(e) => panic!("{}", e.to_string()),
         }
     }
 
@@ -356,7 +357,7 @@ mod tests {
         let p: Result<Request, serde_json::Error> = self::serde_json::from_str(default_req());
         match p {
             Ok(req) => assert_eq!(req.locale(), Locale::AmericanEnglish),
-            Err(e) => panic!(e.to_string()),
+            Err(e) => panic!("{}", e.to_string()),
         }
     }
 
@@ -365,7 +366,7 @@ mod tests {
         let p: Result<Request, serde_json::Error> = self::serde_json::from_str(default_req());
         match p {
             Ok(req) => assert!(req.locale().is_english()),
-            Err(e) => panic!(e.to_string()),
+            Err(e) => panic!("{}", e.to_string()),
         }
     }
 
@@ -375,7 +376,7 @@ mod tests {
             self::serde_json::from_str(default_spanish_req());
         match p {
             Ok(req) => assert!(req.locale().is_spanish()),
-            Err(e) => panic!(e.to_string()),
+            Err(e) => panic!("{}", e.to_string()),
         }
     }
 
@@ -385,7 +386,7 @@ mod tests {
             self::serde_json::from_str(default_french_req());
         match p {
             Ok(req) => assert!(req.locale().is_french()),
-            Err(e) => panic!(e.to_string()),
+            Err(e) => panic!("{}", e.to_string()),
         }
     }
     #[test]
@@ -393,7 +394,7 @@ mod tests {
         let p: Result<Request, serde_json::Error> = self::serde_json::from_str(default_req());
         match p {
             Ok(req) => assert_eq!(req.intent(), IntentType::User(String::from("hello"))),
-            Err(e) => panic!(e.to_string()),
+            Err(e) => panic!("{}", e.to_string()),
         }
     }
 
@@ -402,7 +403,7 @@ mod tests {
         let p: Result<Request, serde_json::Error> = self::serde_json::from_str(req_with_slots());
         match p {
             Ok(req) => assert_eq!(req.slot_value("name"), Some(String::from("bob"))),
-            Err(e) => panic!(e.to_string()),
+            Err(e) => panic!("{}", e.to_string()),
         }
     }
 
@@ -414,7 +415,7 @@ mod tests {
                 assert!(req.session.is_some());
                 assert!(req.session.unwrap().attributes.is_some());
             }
-            Err(e) => panic!(e.to_string()),
+            Err(e) => panic!("{}", e.to_string()),
         }
     }
 
@@ -428,7 +429,7 @@ mod tests {
                     "Jupiter has the shortest day of all the planets"
                 ))
             ),
-            Err(e) => panic!(e.to_string()),
+            Err(e) => panic!("{}", e.to_string()),
         }
     }
 
