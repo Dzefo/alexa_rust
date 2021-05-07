@@ -34,6 +34,12 @@ impl Response {
         }
     }
 
+    pub fn new_simple_open_session(title: &str, text: &str) -> Response {
+        Response::new(false)
+            .card(Card::simple(title, text))
+            .speech(Speech::plain(text))
+    }
+
     /// Constructs a basic plain response with a simple card
     pub fn new_simple(title: &str, text: &str) -> Response {
         Response::simple(title, text)
@@ -54,6 +60,12 @@ impl Response {
     /// adds a speach element to the response
     pub fn speech(mut self, speech: Speech) -> Self {
         self.body.output_speech = Some(speech);
+        self
+    }
+
+    /// adds a reprompt
+    pub fn reprompt(mut self, reprompt: &str) -> Self {
+        self.body.reprompt = Some(Reprompt::new(reprompt));
         self
     }
 
@@ -265,6 +277,14 @@ impl Card {
 pub struct Reprompt {
     #[serde(rename = "outputSpeech")]
     output_speech: Speech,
+}
+
+impl Reprompt {
+    pub fn new(speech: &str) -> Reprompt {
+        Reprompt {
+            output_speech: Speech::plain(speech),
+        }
+    }
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
